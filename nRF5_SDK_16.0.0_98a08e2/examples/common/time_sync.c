@@ -456,8 +456,8 @@ static void update_radio_parameters(sync_pkt_t * p_pkt)
     
 
     // Packet format
-    NRF_RADIO->PCNF0 =  (1 << RADIO_PCNF0_S0LEN_Pos) | 
-                        (8 << RADIO_PCNF0_LFLEN_Pos) | 
+    NRF_RADIO->PCNF0 =  (0 << RADIO_PCNF0_S0LEN_Pos) | 
+                        (0 << RADIO_PCNF0_LFLEN_Pos) | 
                         (0 << RADIO_PCNF0_S1LEN_Pos) | 
                         (RADIO_PCNF0_S1INCL_Include << RADIO_PCNF0_S1INCL_Pos)|
                         (2 << RADIO_PCNF0_CILEN_Pos) |
