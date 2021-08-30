@@ -803,6 +803,9 @@ static void sync_timer_init(void)
 #elif defined(BOARD_PCA10056)
     nrf_gpiote_task_configure(3, NRF_GPIO_PIN_MAP(1, 14), NRF_GPIOTE_POLARITY_TOGGLE, NRF_GPIOTE_INITIAL_VALUE_LOW);
     nrf_gpiote_task_enable(3);
+#elif defined(BOARD_CUSTOM)
+    nrf_gpiote_task_configure(3, NRF_GPIO_PIN_MAP(1, 7), NRF_GPIOTE_POLARITY_TOGGLE, NRF_GPIOTE_INITIAL_VALUE_LOW);
+    nrf_gpiote_task_enable(3);
 #else
 #warning Debug pin not set
 #endif
