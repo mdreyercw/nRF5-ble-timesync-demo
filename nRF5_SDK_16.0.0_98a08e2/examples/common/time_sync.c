@@ -103,8 +103,8 @@ NRF_SDH_SOC_OBSERVER(timesync_soc_obs,     \
                      TS_SOC_OBSERVER_PRIO, \
                      ts_on_sys_evt, 0);
 
-#define TS_LEN_US                            (1000UL)
-#define TX_LEN_EXTENSION_US                  (1000UL)
+#define TS_LEN_US                            (20000UL)
+#define TX_LEN_EXTENSION_US                  (20000UL)
 #define TS_SAFETY_MARGIN_US                  (500UL)   /**< The timeslot activity should be finished with this much to spare. */
 #define TS_EXTEND_MARGIN_US                  (700UL)   /**< The timeslot activity should request an extension this long before end of timeslot. */
 
@@ -441,18 +441,30 @@ static void update_radio_parameters(sync_pkt_t * p_pkt)
     NRF_RADIO->TXPOWER  = RADIO_TXPOWER_TXPOWER_0dBm   << RADIO_TXPOWER_TXPOWER_Pos;
 
     // RF bitrate
-    NRF_RADIO->MODE     = RADIO_MODE_MODE_Nrf_2Mbit       << RADIO_MODE_MODE_Pos;
+    NRF_RADIO->MODE     = RADIO_MODE_MODE_Ble_LR125Kbit       << RADIO_MODE_MODE_Pos; //RADIO_MODE_MODE_Nrf_2Mbit
 
     // Fast startup mode
-    NRF_RADIO->MODECNF0 = RADIO_MODECNF0_RU_Fast << RADIO_MODECNF0_RU_Pos;
+    NRF_RADIO->MODECNF0 = (RADIO_MODECNF0_RU_Fast << RADIO_MODECNF0_RU_Pos)|
+                          (RADIO_MODECNF0_DTX_Center << RADIO_MODECNF0_DTX_Pos);
 
     // CRC configuration
     NRF_RADIO->CRCCNF  = RADIO_CRCCNF_LEN_Three << RADIO_CRCCNF_LEN_Pos;
     NRF_RADIO->CRCINIT = 0xFFFFFFUL;      // Initial value
     NRF_RADIO->CRCPOLY = 0x11021UL;     // CRC poly: x^16+x^12^x^5+1
 
+
+    
+
     // Packet format
-    NRF_RADIO->PCNF0 = (0 << RADIO_PCNF0_S0LEN_Pos) | (0 << RADIO_PCNF0_LFLEN_Pos) | (0 << RADIO_PCNF0_S1LEN_Pos);
+    NRF_RADIO->PCNF0 =  (1 << RADIO_PCNF0_S0LEN_Pos) | 
+                        (8 << RADIO_PCNF0_LFLEN_Pos) | 
+                        (0 << RADIO_PCNF0_S1LEN_Pos) | 
+                        (RADIO_PCNF0_S1INCL_Include << RADIO_PCNF0_S1INCL_Pos)|
+                        (2 << RADIO_PCNF0_CILEN_Pos) |
+                        (RADIO_PCNF0_PLEN_LongRange << RADIO_PCNF0_PLEN_Pos)|
+                        (RADIO_PCNF0_CRCINC_Exclude << RADIO_PCNF0_CRCINC_Pos)|
+                        (3 << RADIO_PCNF0_TERMLEN_Pos);
+
     NRF_RADIO->PCNF1 = (RADIO_PCNF1_WHITEEN_Disabled     << RADIO_PCNF1_WHITEEN_Pos) |
                        (RADIO_PCNF1_ENDIAN_Big           << RADIO_PCNF1_ENDIAN_Pos)  |
                        (4                                << RADIO_PCNF1_BALEN_Pos)   |
